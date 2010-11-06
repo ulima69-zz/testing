@@ -1,0 +1,176 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="js/jquery-1.4.2.js"></script>
+    <script src="js/jquery.limit-1.2.js"></script>
+    <link href="css/util/util.css" />
+    <style type="text/css">
+        body {
+            
+            margin: 0; padding: 0;}
+        #wrapper{margin: 0 auto; width: 960px;}
+        #head {
+            height: 50px;
+            background: url('image/gline.png') repeat-x;
+            margin-bottom: 10px;
+        }
+        #content { 
+            background: #ff6633;
+            height: 390px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        #footer {
+            background: url('image/gline.png') repeat-x;
+            height: 100px;
+            
+        }
+
+        #meustweets {
+            background: url('image/gline.png') repeat-x;
+            width: 700px;
+            height: 300px;
+            float: left;
+        }
+
+        #meusseguidos {
+            background: url('image/gline.png') repeat-x;
+            width: 160px;
+            height: 240px;
+            float: right;
+        }
+
+        #meusseguidosfotos {
+            height: 220px;
+            margin-top: 10px;
+            margin-right: 10px;
+            float: right;
+            overflow: auto;}
+
+        #botaorefresh {
+            background: url('image/gline.png') repeat-x;
+            width: 160px;
+            height: 50px;
+            margin-top: 250px;
+        }
+
+        #botaorefresh span {color: #A65C0E; }
+
+        #footer #tweetmessage #message textarea {
+            width: 672px;
+            height: 50px;
+            margin-left: 14px; margin-top: 12px;}
+
+        #footer #tweetmessage #tweetbutton {
+            background: url('image/tweet.png') #ffb260 no-repeat;
+            margin-top: 25px;
+            margin-right: 14px;
+            width: 160px;
+            height: 50px;
+            float: right;
+            
+        }
+
+        #message {float: left;}
+
+       
+
+        
+    </style>
+
+    <script type="text/javascript">
+        //enable chcracter count in textarea
+        $(document).ready(function(){
+            $('#tweetertextarea').limit('140','#left');
+        });
+    </script>
+  </head>
+  <body>
+      <div id="wrapper">
+
+          <div id="head" class="rounded-corners"></div>
+
+          <div id="content" class="rounded-corners">
+              <div id="meustweets" class="rounded-corners"></div>
+              <div id="meusseguidos" class="rounded-corners">
+                  <div id="meusseguidosfotos">
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                      <div class="seguido">
+                          <img src="image/example.png" />
+                          <a href="#">nome</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div id="footer" class="rounded-corners">
+              <div id="tweetmessage">
+                  <form name="messageform" method="POST">
+                      <div id="message">
+                          <textarea id="tweetertextarea" name="message"></textarea>
+                          <div style="margin-left: 16px; margin-top: 4px;">Ainda restam <span id="left"> </span> caracteres.</div>
+                      </div>
+                      <div id="tweetbutton" class="rounded-corners"></div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+SMAP
+friendsportletlist_tag.java
+JSP
+*S JSP
+*F
++ 0 friendsportletlist.tag
+WEB-INF/tags/ictags/friendsportletlist.tag
+*L
+5,9:72
+13:104,8
+14:112
+14:133,11
+15:144
+16:145,5
+17:150
+18:151,7
+19:158
+20,3:159,3
+23,4:168
+26:115
+27,2:82
+*E

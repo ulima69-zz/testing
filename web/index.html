@@ -1,0 +1,441 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript"  src="js/jquery-1.4.2.js"></script>
+        <script type="text/javascript"  src="js/jquery.limit-1.2.js"></script>
+        <script type="text/javascript"  src="js/jquery.qtip-1.0.js"></script>
+        <script type="text/javascript"  src="js/jquery.ui.core.js"></script>
+        <script type="text/javascript"  src="js/jquery.ui.widget.js"></script>
+        <script type="text/javascript"  src="js/jquery.ui.button.js"></script>
+        <link rel="stylesheet" href="css/util/util.css" />
+        <link rel="stylesheet" href="css/themes/cupertino/jquery.ui.button.css" />
+        <link rel="stylesheet" href="css/themes/cupertino/jquery.ui.theme.css" />
+        <style type="text/css">
+            body {
+                margin: 0; padding: 0; height: 100%;}
+            #wrapper{margin: 0 auto; width: 960px; height: 100%; min-height: 100%}
+
+            #head {
+                height: 50px;
+                background: url('image/gline.png') repeat-x;
+                margin-bottom: 10px;
+            }
+
+            #content {
+                background: #ff6633;
+                height: 510px;
+                margin-bottom: 10px;
+                padding: 10px;
+            }
+
+            #footer {
+                background: url('image/gline.png') repeat-x;
+                height: 100px;
+
+            }
+
+            #meustweets {
+                background: url('image/fundo.png') repeat-x;
+                width: 700px;
+                height: 510px;
+                float: left;
+            }
+
+            #tweetswrapper {
+                margin: 10px;
+                height: 490px;
+                overflow: auto;
+            }
+
+            #tweetswrapper div.twitterrow {
+                background:url("image/bg_pattern_gray.png") repeat scroll left top transparent;
+                margin: 10px;
+                height: 100px;
+                border: 1px solid #36f;
+            }
+
+            #tweetswrapper div.twitterrow:hover {border: 1px solid #f63;}
+
+            #tweetswrapper div.twitterrow div.userinfo {margin: 5px;float: left;}
+            #tweetswrapper div.twitterrow div.usertweet {
+                float: left;
+            }
+
+            #meusseguidos {
+                background: url('image/gline.png') repeat-x;
+                width: 160px;
+                height: 240px;
+                float: right;
+            }
+
+            #meusseguidosfotos {
+                height: 220px;
+                margin-top: 10px;
+                margin-right: 10px;
+                float: right;
+                overflow: auto;}
+
+            #botaorefresh {
+                background: url('image/gline.png') repeat-x;
+                width: 160px;
+                height: 50px;
+                margin-top: 250px;
+            }
+
+            #botaorefresh span {color: #A65C0E; }
+
+            #footer #tweetmessage #message textarea {
+                width: 672px;
+                height: 50px;
+                margin-left: 14px; margin-top: 12px;}
+
+            #footer #tweetmessage #tweetbutton {
+                background: #ff6633;
+                margin-top: 25px;
+                margin-right: 14px;
+                width: 160px;
+                height: 50px;
+                float: right;
+
+            }
+
+            #footer #tweetmessage #tweetbutton #innertweetbutton{
+                background: #36f;
+            }
+
+            #message {float: left;}
+
+            
+
+            .seguido {display: inherit;}
+
+            .rounded-corners {
+                -moz-border-radius: 10px;
+                -webkit-border-radius: 10px;
+                -khtml-border-radius: 10px;
+                border-radius: 10px;
+            }
+
+            .transparent {
+                filter:alpha(opacity=50);
+                -moz-opacity:0.5;
+                -khtml-opacity: 0.5;
+                opacity: 0.5;
+            }
+
+            /*.seguido {
+                width: 300px;
+                height: 100px;
+                background:url("image/bg_pattern_gray.png") repeat scroll left top transparent;
+                margin-bottom: 5px;
+                padding: 4px 2px 2px 4px;
+                border: solid 1px #3cf;
+            }
+
+            #meusseguidosfotosleft {
+                width: 400px;
+                height: 500px;
+                margin-top: 20px;
+                margin-right: 10px;
+                float: right;
+                overflow: auto;}*/
+        </style>
+
+        <script type="text/javascript">
+            //enable chcracter count in textarea
+            $(document).ready(function(){
+                $('#tweetertextarea').limit('140','#left');
+            });
+
+            //setting tooltip
+            $(document).ready(function(){
+                $('#meusseguidosfotos div.seguido img').qtip({
+                    content: '<span style=\"display:block;\">Fulano de Tal</span><span style=\"display:block;\">@FulanodeTal</span>',
+                    position: {
+                        corner: {
+                            target: 'topRight',
+                            tooltip: 'bottomLeft'
+                        }
+                    },
+                    style: {
+                        name: 'cream',
+                        border: {
+                            width: 2,
+                            radius: 4
+                        },
+                        tip: 'bottomLeft'
+                    }
+                });
+            });
+
+
+             //ajustando twitter button
+            $(document).ready(function(){
+                $('input:submit').button();
+            });
+          </script>
+    </head>
+    <body>
+        <div id="wrapper">
+
+            <div id="head" class="rounded-corners"></div>
+
+            <div id="content" class="rounded-corners">
+                <div id="meustweets" class="rounded-corners">
+                    <div id="tweetswrapper">
+                        <div class="twitterrow hsmonline">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/59208415/hsm_normal.jpg" />
+                                <a href="http://www.twitter.com/hsmonline">@hsmonline</a>
+                            </div>
+
+                            <div class="usertweet">“Antes de pretender liderar os outros, você precisa aprender a liderar a si mesmo”. Leia mais no artigo da @hsmonline. http://migre.me/1UFAn</div>
+                        </div>
+
+                        <div class="twitterrow pantchass">
+                            <div class="userinfo">
+                                <img src="http://a1.twimg.com/profile_images/1153674921/SDC13516_normal.JPG" />
+                                <a href="http://www.twitter.com/pantchass">@pantchass</a>
+                            </div>
+                            <div class="usertweet">#BrothersFilm http://twitpic.com/3313m4</div>
+
+                        </div>
+
+                        <div class="twitterrow paulynejuca">
+                            <div class="userinfo">
+                                <img src="http://s.twimg.com/a/1287523226/images/default_profile_4_normal.png" />
+                                <a href="http://www.twitter.com/paulynejuca">@paulynejuca</a>
+                            </div>
+                            <div class="usertweet">RT @cesarofi: Dilma ganharia a eleição mesmo sem o NE. SP teve 5M de abstenções e a culpa é dos nordestinos. É cada uma. #orgulhodeserno ...</div>
+                        </div>
+
+
+                        <div class="twitterrow seumoura">
+                            <div class="userinfo">
+                                <img src="http://a1.twimg.com/profile_images/1153732117/simpgranp1_normal.jpg" />
+                                <a href="http://www.twitter.com/seumoura">@seumoura</a>
+                            </div>
+                            <div class="usertweet">#mimimi RT: @darthvader: Glad Halloween is over. Hard to be intimidating when there's a 3ft version of you on every street in America.</div>
+                        </div>
+
+                        <div class="twitterrow iMasters">
+
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/1148135919/b7362e23-a9d5-43d4-8619-d1883b183585_normal.png" />
+                                <a href="http://www.twitter.com/iMasters">@iMasters</a>
+                            </div>
+                            <div class="usertweet">Internet cresce 72% em propaganda http://zapt.in/VaH</div>
+                        </div>
+
+                        <div class="twitterrow olhardigital">
+                            <div class="userinfo">
+
+                                <img src="http://a3.twimg.com/profile_images/1040273559/olho_twitter_normal.png" />
+                                <a href="http://www.twitter.com/olhardigital">@olhardigital</a>
+                            </div>
+                            <div class="usertweet">Nova ferramenta de busca quer trazer apenas resultados úteis e confiáveis  http://bit.ly/c1ntcy</div>
+                        </div>
+
+                        <div class="twitterrow PaniniHerois">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+                            <div class="usertweet">Entre no www.paninicomics.com.br e confira as nossas novidades! ;)</div>
+                        </div>
+
+                        <div class="twitterrow wpcandy">
+                            <div class="userinfo">
+                                <img src="http://a2.twimg.com/profile_images/1104466198/twitter_normal.png" />
+                                <a href="http://www.twitter.com/wpcandy">@wpcandy</a>
+
+                            </div>
+                            <div class="usertweet">We're recording episode nine of the WPCandy WordPress Podcast in a few hours. Anything you would like us to talk about? Questions?</div>
+                        </div>
+
+                        <div class="twitterrow fuckmeplease">
+                            <div class="userinfo">
+                                <img src="http://a2.twimg.com/profile_images/1143969906/fuck_normal.jpg" />
+                                <a href="http://www.twitter.com/fuckmeplease">@fuckmeplease</a>
+                            </div>
+
+                            <div class="usertweet">RT @po_ravel: QUEM É QUE TEM UM MONTE DE PINTINHA? É A GALINHA PINTADINHA</div>
+                        </div>
+
+                        <div class="twitterrow fuckmeplease">
+                            <div class="userinfo">
+                                <img src="http://a2.twimg.com/profile_images/1143969906/fuck_normal.jpg" />
+                                <a href="http://www.twitter.com/fuckmeplease">@fuckmeplease</a>
+                            </div>
+                            <div class="usertweet">PARA ARETUZA PORRA!</div>
+
+                        </div>
+
+                        <div class="twitterrow tramposTI">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/538593167/at-tramposti_normal.jpg" />
+                                <a href="http://www.twitter.com/tramposTI">@tramposTI</a>
+                            </div>
+                            <div class="usertweet">GRUPO TV1 #rj contrata PROGRAMADOR .NET com conhecimento em asp.net, c, ado.net, sql server e inglês técnico. cv cvannozzi@grupotv1.com.br</div>
+                        </div>
+
+
+                        <div class="twitterrow PaniniHerois">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+                            <div class="usertweet">Fiquem ligados, quarta-feira teremos mais promoçoes.</div>
+                        </div>
+
+                        <div class="twitterrow PaniniHerois">
+
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+                            <div class="usertweet">Parabéns, @loslemes vc ganhou o  X-MEN Extra (106) e Universo Marvel Anual (3). Mande seus dados postais por DM. http://twitpic.com/3310fm</div>
+                        </div>
+
+                        <div class="twitterrow jovemnerd">
+                            <div class="userinfo">
+
+                                <img src="http://a1.twimg.com/profile_images/1152274313/avatar_nerdinho_normal.jpg" />
+                                <a href="http://www.twitter.com/jovemnerd">@jovemnerd</a>
+                            </div>
+                            <div class="usertweet">RT @HenriqueMard: @jovemnerd eu queria Nerdcast todo dia, e nem por isso tô reclamando! // Hehhehehehhe :)</div>
+                        </div>
+
+                        <div class="twitterrow PaniniHerois">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+                            <div class="usertweet">No O Invencível Homem De Ferro Ed. 06 . Stark continua sua fuga. Quem chega à Rússia para resgatar Madame Máscara e a armadura de Pepper?</div>
+                        </div>
+
+                        <div class="twitterrow jovemnerd">
+                            <div class="userinfo">
+                                <img src="http://a1.twimg.com/profile_images/1152274313/avatar_nerdinho_normal.jpg" />
+                                <a href="http://www.twitter.com/jovemnerd">@jovemnerd</a>
+
+                            </div>
+                            <div class="usertweet">RT @HenriqueMard: @jovemnerd larga de ser reclamão! // Nunca! Só reclamando que as coisas andam neste país.</div>
+                        </div>
+
+                        <div class="twitterrow PaniniHerois">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+
+                            <div class="usertweet">Prontos? A pergunta será retirada do site Panini Comics: http://www.paninicomics.com.br</div>
+                        </div>
+
+                        <div class="twitterrow PaniniHerois">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+                            <div class="usertweet">A resposta tem que ser no formato obrigatório: #quadrinhospanini + @PaniniHerois + resposta</div>
+
+                        </div>
+
+                        <div class="twitterrow PaniniHerois">
+                            <div class="userinfo">
+                                <img src="http://a3.twimg.com/profile_images/870193215/whaddaya_say_bats_normal.jpg" />
+                                <a href="http://www.twitter.com/PaniniHerois">@PaniniHerois</a>
+                            </div>
+                            <div class="usertweet">Fiquem ligados!</div>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="meusseguidos" class="rounded-corners">
+                    <div id="meusseguidosfotos">
+                        <div id="fuckmeplease" class="seguido" >
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                        <div class="seguido">
+                            <img src="image/example.png" />
+                            <a href="#">nome</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer" class="rounded-corners">
+                <div id="tweetmessage">
+                    <form name="messageform" method="POST">
+                        <div id="message">
+                            <textarea id="tweetertextarea" name="message"></textarea>
+                            <div style="margin-left: 16px; margin-top: 4px;">Ainda restam <span id="left"> </span> caracteres.</div>
+                        </div>
+                        <div id="tweetbutton" class="rounded-corners">
+                            <div id="innertweetbutton" class="rounded-corners">
+                                <input type="submit" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

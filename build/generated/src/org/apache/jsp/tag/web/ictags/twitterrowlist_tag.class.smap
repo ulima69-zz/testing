@@ -1,0 +1,24 @@
+SMAP
+twitterrowlist_tag.java
+JSP
+*S JSP
+*F
++ 0 twitterrowlist.tag
+WEB-INF/tags/ictags/twitterrowlist.tag
+*L
+5,8:72
+12:79,9
+13:88
+14:113,8
+15:121
+15:142,11
+16:153,3
+17:156
+18:157,5
+19:162,3
+20:165
+21:166,3
+22,2:169
+23:124
+24,2:91
+*E

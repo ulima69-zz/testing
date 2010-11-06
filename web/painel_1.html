@@ -1,0 +1,180 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="js/jquery-1.4.2.js"></script>
+    <script src="js/jquery.limit-1.2.js"></script>
+    <script src="js/jquery.pageslide.js"></script>
+    <script src="js/jquery-ui-1.8.5.min.js"></script>
+    <style type="text/css">
+        body {
+
+            margin: 0; padding: 0;}
+        #wrapper{margin: 0 auto; width: 960px;}
+        #head {
+            height: 50px;
+            background: url('image/gline.png') repeat-x;
+            margin-bottom: 10px;
+        }
+        #content {
+            background: #ff6633;
+            height: 590px;
+            padding: 10px;
+        }
+
+        #meustweets {
+            background: url('image/gline.png') #3cf repeat-x;
+            width: 450px;
+            height: 590px;
+            float: left;
+        }
+
+        #meusseguidos {
+            background: url('image/gline.png') #3cf repeat-x;
+            width: 450px;
+            height: 590px;
+            float: right;
+        }
+
+        #meusseguidosfotos {
+            width: 400px;
+            height: 500px;
+            margin-top: 20px;
+            margin-right: 10px;
+            float: right;
+            overflow: auto;}
+
+         #meusseguidosfotosleft {
+            width: 400px;
+            height: 500px;
+            margin-top: 20px;
+            margin-right: 10px;
+            float: right;
+            overflow: auto;}
+
+        #barra {
+            background: url('image/gline.png') #3cf repeat-x;
+            width: 5px;
+            height: 590px;
+            float: right;
+            margin-right: 470px;
+}
+
+        .rounded-corners {
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            -khtml-border-radius: 10px;
+            border-radius: 10px;
+        }
+
+        .transparent_class {
+            filter:alpha(opacity=50);
+            -moz-opacity:0.5;
+            -khtml-opacity: 0.5;
+            opacity: 0.5;
+        }
+
+        .seguido {
+            width: 300px;
+            height: 100px;
+            background:url("image/bg_pattern_gray.png") repeat scroll left top transparent;
+            margin-bottom: 5px;
+            padding: 4px 2px 2px 4px;
+            border: solid 1px #3cf;
+        }
+
+        div.icportlet {
+            width: 200px;
+            background-color: #f63;
+            margin: 10px;
+            border: #ff6633 10px solid;
+        }
+
+        div.icportlet div.portlet_title {
+            width: 196px;
+            height: 22px;
+            background-color: #3cf;
+            margin-bottom: 10px;
+            padding: 2px;
+        }
+
+        div.icportlet div.portlet_title span{
+            margin-left: 10px;
+        }
+
+        div.icportlet div.icportletinfo {
+            background-color: #3cf;
+            width: 200px;
+            height: 200px;
+            overflow: auto;
+        }
+
+        div.icportlet div.icportletinfo ul {
+            list-style: none;
+        }
+
+        div.icportlet div.icportletinfo ul li{
+            margin: 2px 0;
+}
+
+        div.icportlet div.icportletinfo ul li a{
+            text-decoration: none;
+            color: #000;
+        }
+
+
+        
+
+    </style>
+
+    <script type="text/javascript">
+        $(".portlet_title span").click(function(){
+            $(".icportletinfo").slideToggle("fast");
+        });
+    </script>
+
+  </head>
+  <body>
+      <div>
+          <div id="" class="icportlet rounded-corners">
+              <div class="portlet_title rounded-corners"><span>Tarararra</span></div>
+                  <div class="icportletinfo rounded-corners">
+                      <ul>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                          <li><a href="">item</a></li>
+                      </ul>
+                  </div>
+          </div>
+      </div>
+      
+  </body>
+</html>
