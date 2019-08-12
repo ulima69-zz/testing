@@ -1,0 +1,662 @@
+
+
+%include '/dados/infor/suporte/FuncoesInfor.sas';
+libname CBR '/dados/gecen/interno/bases/cbr';
+libname BCN '/dados/gecen/interno/bases/bcn';
+LIBNAME AUX_1 "/dados/infor/producao/cobranca_qualificada_19";
+
+
+DATA _NULL_;
+
+D1 = '01JAN2019'd;
+/*D1 = diaUtilAnterior(TODAY());*/
+CALL SYMPUT('D1',COMPRESS(D1,' '));
+
+ANO_ATUAL = 2019;
+CALL SYMPUT('ANO_ATUAL',COMPRESS(ANO_ATUAL,' '));
+
+MES_POSICAO = 01;
+/*MES_POSICAO = Put(MONTH (diaUtilAnterior(TODAY())), Z2.);*/
+CALL SYMPUT('MES_POSICAO', COMPRESS(MES_POSICAO,' '));
+
+ANOMES = 201901;
+/*ANOMES = Put(D1, yymmn6.);*/
+CALL SYMPUT('ANOMES',COMPRESS(ANOMES,' '));
+
+MESANO = 012019;
+/*MESANO = Put(D1, mmyyn6.);*/
+CALL SYMPUT('MESANO',COMPRESS(MESANO,' '));
+
+RUN;
+
+
+%Put &MES_POSICAO &ANO_ATUAL &D1 &ANOMES &MESANO;
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_1 AS 
+   SELECT 
+      
+      CD_CLI,
+	  QT_TIT_GR_ITC 
+
+      FROM CBR.TIT_CBR_LQDD_CLI
+	  WHERE CD_PRD = 14 AND MONTH(DT_PER_MVT_TIT) = &MES_POSICAO. AND YEAR(DT_PER_MVT_TIT) = &ANO_ATUAL. AND CD_TIP_EVT_TARF IN (1, 2, 19)
+	  
+      ORDER BY 1;
+QUIT;
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_2 AS 
+   SELECT 
+      
+      CD_CLI,
+	  SUM(QT_TIT_GR_ITC) AS QTDE
+
+      FROM CBR_QUALIFICACAO_1
+      GROUP BY 1
+      ORDER BY 1;
+
+QUIT;
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_3 AS 
+   SELECT 
+
+      MCI,
+	  VLR_FATURAMENTO
+      
+      FROM AUX_1.BCN_SEG_201901 
+      ORDER BY 1;
+
+QUIT;
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_4_ANT AS 
+   SELECT DISTINCT
+      
+      t1.CD_CLI AS MCI_1,
+      t2.MCI AS MCI_2,
+	  t1.QTDE,
+      t2.VLR_FATURAMENTO AS FATURAMENTO
+
+      FROM CBR_QUALIFICACAO_2 t1
+	  FULL JOIN CBR_QUALIFICACAO_3 t2 ON t1.CD_CLI = t2.MCI
+	  	  
+      ORDER BY 1;
+QUIT;
+
+
+PROC STDIZE DATA=CBR_QUALIFICACAO_4_ANT OUT=CBR_QUALIFICACAO_4_ANT REPONLY MISSING=0;
+	VAR _NUMERIC_;
+QUIT;
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_4 AS 
+   SELECT DISTINCT
+      
+      IFN(t1.MCI_1 <> 0, t1.MCI_1, MCI_2) AS MCI,
+      t1.QTDE,
+      t1.FATURAMENTO
+
+      FROM CBR_QUALIFICACAO_4_ANT t1
+	  	  	  
+      ORDER BY 1;
+QUIT;
+
+
+/*ENCARTEIRANDO*/
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_5 AS 
+      SELECT DISTINCT 
+
+          t2.CD_PRF_DEPE AS PREFIXO, 
+          t2.NR_SEQL_CTRA AS CARTEIRA,
+          t1.MCI,
+	      t1.QTDE,
+          t1.FATURAMENTO          
+		            
+      FROM CBR_QUALIFICACAO_4 t1
+      INNER JOIN COMUM.PAI_REL_201901 t2 ON (t1.MCI = t2.CD_CLI);
+
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_6 AS 
+      SELECT DISTINCT 
+
+          t1.PREFIXO, 
+          t1.CARTEIRA,
+          t1.MCI,
+	      t1.QTDE,
+          t1.FATURAMENTO           
+		            
+      FROM CBR_QUALIFICACAO_5 t1
+      WHERE 
+      (t1.FATURAMENTO < 120000 AND t1.QTDE >= 6)
+      OR(t1.FATURAMENTO >= 120000 AND t1.FATURAMENTO < 250000 AND t1.QTDE >= 8) 
+	  OR(t1.FATURAMENTO >= 250000 AND t1.FATURAMENTO < 500000 AND t1.QTDE >= 10)
+	  OR(t1.FATURAMENTO >= 500000 AND t1.FATURAMENTO < 750000 AND t1.QTDE >= 14)
+	  OR(t1.FATURAMENTO >= 750000 AND t1.FATURAMENTO < 1000000 AND t1.QTDE >= 16)
+	  OR(t1.FATURAMENTO >= 1000000 AND t1.FATURAMENTO < 2500000 AND t1.QTDE >= 23)
+	  OR(t1.FATURAMENTO >= 2500000 AND t1.FATURAMENTO < 5000000 AND t1.QTDE >= 40)
+	  OR(t1.FATURAMENTO >= 5000000 AND t1.FATURAMENTO < 25000000 AND t1.QTDE >= 59)
+	  OR(t1.FATURAMENTO >= 25000000 AND t1.QTDE >= 121);
+
+QUIT;
+
+
+/*TABELA CLIENTES*/
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_CLIENTES AS 
+      SELECT DISTINCT 
+
+          t1.PREFIXO AS PREFDEP, 
+          t1.CARTEIRA AS CTRA,
+          t1.MCI,
+          1 AS TOTAL 
+		            
+      FROM CBR_QUALIFICACAO_6 t1;
+
+QUIT;
+
+
+/*VENDO OS PREFIXOS QUE ESTÃO NO ACORDO*/
+/*VENDO OS PREFIXOS QUE ESTÃO NO ACORDO*/
+/*VENDO OS PREFIXOS QUE ESTÃO NO ACORDO*/
+/*VENDO OS PREFIXOS QUE ESTÃO NO ACORDO*/
+
+
+%BuscarPrefixosIndicador(IND=118, MMAAAA=012019, NIVEL_CTRA=1, SO_AG_PAA=1);
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_CLIENTES_1 AS 
+   SELECT t1.PREFDEP, t1.CTRA, t2.UOR, t1.MCI, t1.TOTAL 
+   FROM CBR_QUALIFICACAO_CLIENTES t1
+   INNER JOIN PREFIXOS_IND_000000118 t2 ON t1.PREFDEP = t2.PREFDEP AND t1.CTRA = t2.CTRA
+   ORDER BY 2, 3;
+QUIT;
+
+
+/*TABELA GERAL*/
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  COUNT(t1.MCI) AS TOTAL        
+		            
+      FROM CBR_QUALIFICACAO_CLIENTES_1 t1
+      GROUP BY 1, 2;
+
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE TOTAL_DE_CLIENTES AS 
+      SELECT DISTINCT 
+
+          t1.CD_PRF_DEPE AS PREFIXO, 
+          t1.NR_SEQL_CTRA AS CARTEIRA,
+          t1.CD_CLI AS MCI    
+		            
+   FROM COMUM.PAI_REL_201901 t1;
+
+QUIT;
+
+
+PROC STDIZE DATA=TOTAL_DE_CLIENTES OUT=TOTAL_DE_CLIENTES REPONLY MISSING=0;
+	VAR _NUMERIC_;
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE TOTAL_DE_CLIENTES_1 AS 
+      SELECT DISTINCT 
+
+          t1.PREFIXO AS PREFDEP, 
+          t1.CARTEIRA AS CTRA,
+          COUNT(t1.MCI) AS TOT_CLI    
+		            
+   FROM TOTAL_DE_CLIENTES t1
+   WHERE  t1.PREFIXO <> 0 AND t1.CARTEIRA <> 0
+   GROUP BY 1, 2;
+
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_1 AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  t1.TOTAL,
+          t2.TOT_CLI 
+		            
+      FROM CBR_QUALIFICACAO_GERAL t1
+      INNER JOIN TOTAL_DE_CLIENTES_1 t2 ON t1.PREFDEP = t2.PREFDEP AND t1.CTRA = t2.CTRA;
+
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_2 AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  (t1.TOTAL / t1.TOT_CLI)*100 AS TOTAL FORMAT 32.2
+		            
+      FROM CBR_QUALIFICACAO_GERAL_1 t1;
+
+QUIT;
+
+
+/*SUMARIZANDO*/
+
+PROC SQL;
+DROP TABLE COLUNAS_SUMARIZAR;
+CREATE TABLE COLUNAS_SUMARIZAR (Coluna CHAR(50), Tipo CHAR(10));
+INSERT INTO COLUNAS_SUMARIZAR VALUES ('TOTAL', 'SUM');
+QUIT;
+
+
+/*FUNCAO DE SUMARIZACAO*/ 
+
+%SumarizadorCNX( TblSASValores=CBR_QUALIFICACAO_GERAL_2,  TblSASColunas=COLUNAS_SUMARIZAR,  NivelCTRA=1,  PAA_PARA_AGENCIA=1,  TblSaida=CBR_QUALIFICACAO_GERAL_2, AAAAMM=201901); 
+ 
+
+PROC STDIZE DATA=CBR_QUALIFICACAO_GERAL_2 OUT=CBR_QUALIFICACAO_GERAL_2 REPONLY MISSING=0;
+	VAR _NUMERIC_;
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_3 AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  t1.UOR,
+		  t1.TOTAL        
+		            
+      FROM CBR_QUALIFICACAO_GERAL_2 t1
+      GROUP BY 1, 2;
+
+QUIT;
+
+
+%BuscarPrefixosIndicador(IND=118, MMAAAA=012019, NIVEL_CTRA=1, SO_AG_PAA=1);
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_4 AS 
+   SELECT t1.PREFDEP, t1.CTRA, t2.UOR, t1.TOTAL 
+   FROM CBR_QUALIFICACAO_GERAL_3 t1
+   INNER JOIN PREFIXOS_IND_000000118 t2 ON t1.PREFDEP = t2.PREFDEP AND t1.CTRA = t2.CTRA
+   ORDER BY 2, 3;
+QUIT;
+
+
+/*ENVIANDO PARA O CONEXÃO*/
+/*ENVIANDO PARA O CONEXÃO*/
+/*ENVIANDO PARA O CONEXÃO*/
+/*ENVIANDO PARA O CONEXÃO*/
+
+
+PROC SQL;
+    CREATE TABLE WORK.PARA_BASE_CONEXAO_COMP AS
+        SELECT
+            118 as ind, /*CODIGO INDICADOR 180 */
+            1 as COMP, /*CODIGO COMPONENTE, SE NÃO FOR COMPONENTE USAR 0*/
+            0 as COMP_PAI, /*CODIGO COMPONENTE PAI, SE NÃO FOR COMPONENTE USAR 0*/
+            1 as ORD_EXI, /*ORDEM EXIBIÇÃO, SE NÃO FOR COMPONENTE USAR 0*/
+            UOR,
+            PREFDEP,
+            CTRA,            
+            TOTAL as VLR_RLZ, /*VALOR REALIZADO*/
+            0 as VLR_ORC, /*VALOR ORÇADO*/
+			0 as VLR_ATG, /*VALOR ATINGIMENTO, por padrão 0, enviar somente se o atingimento tiver regra de cálculo*/  
+			&D1.  FORMAT YYMMDD10. AS POSICAO /*DATA DO VALOR LEVANTADO*/
+        FROM CBR_QUALIFICACAO_GERAL_4
+ORDER BY PREFDEP;
+QUIT;
+
+
+PROC SQL;
+    CREATE TABLE WORK.PARA_BASE_CONEXAO_IND AS
+        SELECT
+            118 as ind, /*CODIGO INDICADOR*/
+            0 as COMP, /*CODIGO COMPONENTE, SE NÃO FOR COMPONENTE USAR 0*/
+            0 as COMP_PAI, /*CODIGO COMPONENTE PAI, SE NÃO FOR COMPONENTE USAR 0*/
+            0 as ORD_EXI, /*ORDEM EXIBIÇÃO, SE NÃO FOR COMPONENTE USAR 0*/
+            UOR,
+            PREFDEP,
+            CTRA,            
+            TOTAL as VLR_RLZ, /*VALOR REALIZADO*/
+            0 as VLR_ORC, /*VALOR ORÇADO*/
+			0 as VLR_ATG, /*VALOR ATINGIMENTO, por padrão 0, enviar somente se o atingimento tiver regra de cálculo*/  
+			&D1.  FORMAT YYMMDD10. AS POSICAO /*DATA DO VALOR LEVANTADO*/
+        FROM CBR_QUALIFICACAO_GERAL_2
+ORDER BY PREFDEP;
+QUIT;
+
+
+DATA PARA_BASE_CONEXAO;
+SET PARA_BASE_CONEXAO_IND PARA_BASE_CONEXAO_COMP;
+BY PREFDEP;
+RUN;
+
+
+PROC SQL;
+    CREATE TABLE WORK.BASE_CONEXAO_CLI AS
+        SELECT
+            118 as IND,
+            1 as COMP,
+            t1.PREFDEP,
+            UOR,
+            CTRA,
+            MCI as CLI,
+            &MESANO as MMAAAA,
+            TOTAL as VLR
+        FROM CBR_QUALIFICACAO_CLIENTES_1 t1 ;
+QUIT;
+
+
+/*%BaseIndicadorCNX(TabelaSAS=PARA_BASE_CONEXAO);
+%BaseIndicadorCNX_CLI(TabelaSAS=BASE_CONEXAO_CLI);
+%ExpCNX_IND_CMPS(118, 2019, MESES=&MES_POSICAO, ORC=1, RLZ=1);
+%ExportarCNX_CLI(IND=118, MMAAAA=&MESANO);*/
+
+
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+/***********DIRECIONADOR************/
+
+
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+
+
+PROC SQL;
+   CREATE TABLE MCI_EXCLUIR AS 
+   SELECT DISTINCT
+      
+      CD_CLI 
+
+      FROM CBR.TIT_CBR_LQDD_CLI	  
+
+	  WHERE CD_PRD = 14 AND (MONTH(DT_PER_MVT_TIT) = 10 OR MONTH(DT_PER_MVT_TIT) = 11 OR MONTH(DT_PER_MVT_TIT) = 12) AND YEAR(DT_PER_MVT_TIT) = 2018 AND CD_TIP_EVT_TARF IN (1, 2, 19)
+	  AND QT_TIT_GR_ITC > 0
+	  
+      ORDER BY 1;
+QUIT;
+
+
+
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/***********************************************/
+
+PROC SQL;
+
+   CREATE TABLE BASE_DIRECIONADOR AS 
+      SELECT DISTINCT 
+
+          t1.PREFIXO AS PREFDEP, 
+          t1.CARTEIRA AS CTRA,
+          t1.MCI,
+          t1.QTDE,
+          t1.FATURAMENTO,
+          1 AS TOTAL 
+		            
+      FROM CBR_QUALIFICACAO_5 t1
+      LEFT JOIN MCI_EXCLUIR t2 ON t1.MCI = t2.CD_CLI
+      WHERE t2.CD_CLI IS MISSING
+      GROUP BY 1,2,3;
+
+QUIT;
+
+
+%BuscarPrefixosIndicador(IND=196, MMAAAA=&MESANO., NIVEL_CTRA=1, SO_AG_PAA=1);
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_CLIENTES_1_DIR AS 
+   SELECT t1.PREFDEP, t1.CTRA, t2.UOR, t1.MCI, t1.TOTAL, t1.QTDE, t1.FATURAMENTO
+   FROM BASE_DIRECIONADOR t1
+   INNER JOIN PREFIXOS_IND_000000196 t2 ON t1.PREFDEP = t2.PREFDEP AND t1.CTRA = t2.CTRA
+   ORDER BY 2, 3;
+QUIT;
+
+
+/*TABELA GERAL*/
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_DIR AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  SUM(t1.TOTAL) AS TOTAL, 
+          SUM(t1.QTDE) AS QTDE,
+		  SUM(t1.FATURAMENTO) AS FATURAMENTO
+		            
+      FROM CBR_QUALIFICACAO_CLIENTES_1_DIR t1
+      GROUP BY 1, 2;
+
+QUIT;
+
+
+/*TOTAL DE CLIENTES*/
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_1_DIR AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  t1.TOTAL,
+		  t1.QTDE,
+		  t1.FATURAMENTO,
+          t2.TOT_CLI          
+		            
+      FROM CBR_QUALIFICACAO_GERAL_DIR t1
+      INNER JOIN TOTAL_DE_CLIENTES_1 t2 ON t1.PREFDEP = t2.PREFDEP AND t1.CTRA = t2.CTRA;
+
+QUIT;
+
+
+/*SUMARIZANDO*/
+
+
+PROC SQL;
+DROP TABLE COLUNAS_SUMARIZAR;
+CREATE TABLE COLUNAS_SUMARIZAR (Coluna CHAR(50), Tipo CHAR(10));
+INSERT INTO COLUNAS_SUMARIZAR VALUES ('TOTAL', 'SUM');
+INSERT INTO COLUNAS_SUMARIZAR VALUES ('QTDE', 'SUM');
+INSERT INTO COLUNAS_SUMARIZAR VALUES ('FATURAMENTO', 'SUM');
+INSERT INTO COLUNAS_SUMARIZAR VALUES ('TOT_CLI', 'SUM');
+
+QUIT;
+
+
+/*FUNCAO DE SUMARIZACAO*/ 
+
+%SumarizadorCNX( TblSASValores=CBR_QUALIFICACAO_GERAL_1_DIR,  TblSASColunas=COLUNAS_SUMARIZAR,  NivelCTRA=1,  PAA_PARA_AGENCIA=1,  TblSaida=CBR_QUALIFICACAO_GERAL_1_DIR, AAAAMM=201901); 
+ 
+
+PROC STDIZE DATA=CBR_QUALIFICACAO_GERAL_1_DIR OUT=CBR_QUALIFICACAO_GERAL_1_DIR REPONLY MISSING=0;
+	VAR _NUMERIC_;
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_2_DIR AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  t1.UOR,
+		  t1.TOTAL as TOT_DIR,
+		  (t1.TOTAL / t1.TOT_CLI)*100 AS TOTAL FORMAT 32.2,
+		  t1.QTDE
+		            
+      FROM CBR_QUALIFICACAO_GERAL_1_DIR t1;
+
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_3_DIR AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+		  t1.UOR,
+		  t1.TOT_DIR,
+		  t1.TOTAL,
+          t1.QTDE 
+		            
+      FROM CBR_QUALIFICACAO_GERAL_2_DIR t1
+      GROUP BY 1, 2;
+
+QUIT;
+
+
+%BuscarPrefixosIndicador(IND=196, MMAAAA=&MESANO., NIVEL_CTRA=1, SO_AG_PAA=0);
+
+
+PROC SQL;
+   CREATE TABLE CBR_QUALIFICACAO_GERAL_4_DIR AS 
+   SELECT t1.PREFDEP, t1.CTRA, t2.UOR, t1.TOTAL, t1.TOT_DIR, t1.QTDE
+   FROM CBR_QUALIFICACAO_GERAL_3_DIR t1
+   INNER JOIN PREFIXOS_IND_000000196 t2 ON t1.PREFDEP = t2.PREFDEP AND t1.CTRA = t2.CTRA
+   ORDER BY 2, 3;
+QUIT;
+
+
+PROC SQL;
+
+   CREATE TABLE DIRECIONADOR_1 AS 
+      SELECT DISTINCT 
+
+          t1.PREFDEP, 
+          t1.CTRA,
+          t1.UOR,
+          t1.QTDE          
+		            
+      FROM CBR_QUALIFICACAO_GERAL_4_DIR t1;
+
+QUIT;
+
+
+/*ENVIANDO PARA O DIRECIONADOR*/ 
+
+PROC SQL;
+    CREATE TABLE WORK.PARA_BASE_CONEXAO_COMP_DIR AS
+        SELECT
+            196 as ind, /*CODIGO INDICADOR 180 */
+            1 as COMP, /*CODIGO COMPONENTE, SE NÃO FOR COMPONENTE USAR 0*/
+            0 as COMP_PAI, /*CODIGO COMPONENTE PAI, SE NÃO FOR COMPONENTE USAR 0*/
+            1 as ORD_EXI, /*ORDEM EXIBIÇÃO, SE NÃO FOR COMPONENTE USAR 0*/
+            UOR,
+            PREFDEP,
+            CTRA,            
+            QTDE as VLR_RLZ, /*VALOR REALIZADO*/
+            0 as VLR_ORC, /*VALOR ORÇADO*/
+			0 as VLR_ATG, /*VALOR ATINGIMENTO, por padrão 0, enviar somente se o atingimento tiver regra de cálculo*/  
+			&D1.  FORMAT YYMMDD10. AS POSICAO /*DATA DO VALOR LEVANTADO*/
+        FROM DIRECIONADOR_1
+ORDER BY PREFDEP;
+QUIT;
+
+
+PROC SQL;
+    CREATE TABLE WORK.PARA_BASE_CONEXAO_IND_DIR AS
+        SELECT
+            196 as ind, /*CODIGO INDICADOR*/
+            0 as COMP, /*CODIGO COMPONENTE, SE NÃO FOR COMPONENTE USAR 0*/
+            0 as COMP_PAI, /*CODIGO COMPONENTE PAI, SE NÃO FOR COMPONENTE USAR 0*/
+            0 as ORD_EXI, /*ORDEM EXIBIÇÃO, SE NÃO FOR COMPONENTE USAR 0*/
+            UOR,
+            PREFDEP,
+            CTRA,            
+            QTDE as VLR_RLZ, /*VALOR REALIZADO*/
+            0 as VLR_ORC, /*VALOR ORÇADO*/
+			0 as VLR_ATG, /*VALOR ATINGIMENTO, por padrão 0, enviar somente se o atingimento tiver regra de cálculo*/  
+			&D1.  FORMAT YYMMDD10. AS POSICAO /*DATA DO VALOR LEVANTADO*/
+        FROM DIRECIONADOR_1
+ORDER BY PREFDEP;
+QUIT;
+
+
+DATA PARA_BASE_CONEXAO_DIR;
+SET PARA_BASE_CONEXAO_IND_DIR PARA_BASE_CONEXAO_COMP_DIR;
+BY PREFDEP;
+RUN;
+
+
+PROC SQL;
+    CREATE TABLE WORK.BASE_CONEXAO_CLI_DIR AS
+        SELECT
+            196 as IND,
+            1 as COMP,
+            t1.PREFDEP,
+            UOR,
+            CTRA,
+            MCI as CLI,
+            &MESANO as MMAAAA,
+            QTDE as VLR
+        FROM CBR_QUALIFICACAO_CLIENTES_1_DIR t1
+        WHERE QTDE <> 0; 
+QUIT;
+
+
+/*%BaseIndicadorCNX(TabelaSAS=PARA_BASE_CONEXAO_DIR);*/
+/*%BaseIndicadorCNX_CLI(TabelaSAS=BASE_CONEXAO_CLI_DIR);
+/*%ExpCNX_IND_CMPS(196, 2019, MESES=&MES_POSICAO, ORC=0, RLZ=1);*//*fora*/
+/*%ExportarCNX_CLI(IND=196, MMAAAA=&MESANO);*/
+/*%ExportarCNX_IND(IND=196, MMAAAA=&MESANO, ORC=0, RLZ=1);*/ /*arquivo indicador*/
+/*%ExportarCNX_COMP(IND=196, MMAAAA=&MESANO, ORC=0, RLZ=1);*/ /*arquivo componentes*/
